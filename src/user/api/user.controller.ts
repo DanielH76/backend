@@ -13,7 +13,6 @@ export class UserController {
 		if (!user) return BadRequestException
 
 		const createdUser = await this.userService.create(user)
-		console.log(createdUser)
 		return createdUser
 	}
 
@@ -33,6 +32,17 @@ export class UserController {
 		console.log(usersToFind)
 
 		if (!usersToFind) return NotFoundException
+		return usersToFind
+	}
+
+	@Get('byStatus/users')
+	async getAllByStatus(@Body() params) {
+		const status = params.status
+
+		const usersToFind = this.userService.getAllByStatus(status)
+
+		if (!usersToFind) return NotFoundException
+
 		return usersToFind
 	}
 
@@ -85,8 +95,6 @@ export class UserController {
 	async updateAbsence(@Body() values: { id: string; status: AbsenceStatus }) {
 		if (!values.id) return 'missing id'
 		if (!values.status) return 'missing status'
-
-		console.log(values)
 
 		const updated = await this.userService.updateAbsenceStatus(values)
 

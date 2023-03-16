@@ -37,10 +37,41 @@ export class UserService {
 		}
 	}
 
+	async getOnsiteStatus(id: string) {
+		if (!id) return null
+
+		try {
+			const userTofind = await this.userModel.findOne({ _id: id })
+
+			if (!userTofind) return NotFoundException
+
+			return userTofind.onSite
+		} catch (error) {
+			return error.message
+		}
+	}
+
 	async getAll() {
 		try {
-			const usersToFind = await this.userModel.find().exec()
+			const usersToFind = (await this.userModel.find().exec()).map((user) => {
+				const { name, age, _id } = user
+				return { name, age, _id }
+			})
 
+			if (!usersToFind) return NotFoundException
+
+			return usersToFind
+		} catch (error) {
+			return error.message
+		}
+	}
+
+	async getAllByStatus(onSite: boolean) {
+		try {
+			const usersToFind = (await this.userModel.find({ onSite: onSite }).exec()).map((user) => {
+				const { name, absenceStatus } = user
+				return { name, absenceStatus }
+			})
 			if (!usersToFind) return NotFoundException
 
 			return usersToFind
@@ -109,7 +140,6 @@ export class UserService {
 			const updated = await this.userModel.findOneAndUpdate(filter, update, {
 				new: true,
 			})
-			console.log(updated)
 			return updated
 		} catch (error) {
 			return error.message
