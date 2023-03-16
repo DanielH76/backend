@@ -61,9 +61,20 @@ export class UserController {
     async updateAddress(@Body() values: {id: string, street: string, number: string, floor: string}){
 
         if(!values.id) return 'missing id'
-        if(!values.street && !values.number && !values.floor) return 'missing update parameters'
+        if(!values.street || !values.number || !values.floor) return 'missing update parameters'
         
         const updated = await this.userService.updateAdressInformation(values)
+
+        return updated
+    }
+
+    @Put('personal')
+    async updatePersonal(@Body() values: {id: string, name: string, age: string}){
+
+        if(!values.id) return 'missing id'
+        if(!values.name || !values.age) return 'missing update parameters'
+
+        const updated = await this.userService.updatePersonalInformation(values)
 
         return updated
     }

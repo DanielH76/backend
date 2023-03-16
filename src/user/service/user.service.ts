@@ -79,14 +79,27 @@ export class UserService {
         const update = {address: {street: values.street, number: values.number, floor: values.floor}}
 
         try{
-            let updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
+            const updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
             console.log(updated)
             return update
         }catch(error){
             return error.message
         }
+    }
 
+    async updatePersonalInformation(values: {id: string, name: string, age: string}){
+        const filter = {_id: values.id}
+        const update = {name: values.name, age: values.age}
 
+        try{
+            const updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
+            console.log(updated)
+            return updated
+
+        }catch(error){
+            return error.message
+        }
 
     }
+
 }
