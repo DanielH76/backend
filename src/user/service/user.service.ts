@@ -23,6 +23,23 @@ export class UserService {
 		}
 	}
 
+	async createQL(values: { name: string; age: string; address: { street: string; number: string; floor: string } }) {
+		let userToCreate = new User()
+
+		userToCreate.name = values.name
+		userToCreate.age = values.age
+		userToCreate.address = values.address
+
+		try {
+			const created = await this.userModel.create(userToCreate)
+			created.save()
+
+			return created
+		} catch (error) {
+			return error.message
+		}
+	}
+
 	async get(id: string) {
 		if (!id) return null
 
@@ -51,12 +68,12 @@ export class UserService {
 		}
 	}
 
-	async getAll() {
+	async getAll(): Promise<User[] | any> {
 		try {
-			const usersToFind = (await this.userModel.find().exec()).map((user) => {
-				const { name, age, _id } = user
-				return { name, age, _id }
-			})
+			// const usersToFind = (await this.userModel.find().exec()).map((user) => {
+			//	const { name, age, _id } = user
+			//	return { name, age, _id }
+			const usersToFind = await this.userModel.find().exec()
 
 			if (!usersToFind) return NotFoundException
 
@@ -68,10 +85,12 @@ export class UserService {
 
 	async getAllByStatus(onSite: boolean) {
 		try {
-			const usersToFind = (await this.userModel.find({ onSite: onSite }).exec()).map((user) => {
-				const { name, absenceStatus } = user
-				return { name, absenceStatus }
-			})
+			// const usersToFind = (await this.userModel.find({ onSite: onSite }).exec()).map((user) => {
+			// 	const { name, absenceStatus } = user
+			// 	return { name, absenceStatus }
+			// })
+
+			const usersToFind = await this.userModel.find({ onSite: onSite }).exec()
 			if (!usersToFind) return NotFoundException
 
 			return usersToFind

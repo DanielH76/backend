@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common'
-import mongoose from 'mongoose'
 import { AbsenceStatus } from '../service/schemas/user.enums'
 import { User } from '../service/schemas/user.schema'
 import { UserService } from '../service/user.service'

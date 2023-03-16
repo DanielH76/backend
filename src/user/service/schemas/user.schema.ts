@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { HydratedDocument, Mongoose, Types } from 'mongoose'
+import { Types } from 'mongoose'
 import { AbsenceStatus } from './user.enums'
 
 export type UserDocument = User & Partial<Document>
