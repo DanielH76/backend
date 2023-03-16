@@ -15,6 +15,12 @@ export class UserResolver {
 		return users
 	}
 
+	@Query(() => [UserModel])
+	async getAllByStatus(@Args('status', { type: () => Boolean }) status: boolean) {
+		const users = this.userService.getAllByStatus(status)
+		return users
+	}
+
 	@Query(() => UserModel)
 	async getById(@Args('id', { type: () => String }) id: string) {
 		const user: UserModel = await this.userService.get(id)
@@ -30,7 +36,6 @@ export class UserResolver {
 	@Mutation(() => UserModel)
 	async updateAddress(@Args('id', { type: () => String }) id: string, @Args('input') input: CreateUserAddressInput) {
 		const updated = this.userService.updateAdressInformation({ id, ...input })
-
 		return updated
 	}
 }

@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, Types } from 'mongoose'
+import { Model } from 'mongoose'
 import { AbsenceStatus } from './schemas/user.enums'
 import { User, UserDocument } from './schemas/user.schema'
 
