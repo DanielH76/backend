@@ -27,6 +27,17 @@ export class User {
 
 	@Prop()
 	absenceStatus: AbsenceStatus
+
+	public create(name: string, age: string, address: { street: string; number: string; floor: string }) {
+		let userToCreate = new User()
+		userToCreate.name = name
+		userToCreate.age = age
+		userToCreate.address = address
+		userToCreate.absenceStatus = 0
+		userToCreate.onSite = false
+
+		return userToCreate
+	}
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

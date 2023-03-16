@@ -1,6 +1,7 @@
 import { Mutation, Query } from '@nestjs/graphql'
 import { Args, Resolver } from '@nestjs/graphql'
 import { UserService } from '../service/user.service'
+import { CreateUserAddressInput } from './inputs/create-user-address.input'
 import { CreateUserInput } from './inputs/create-user.input'
 import { UserModel } from './models/user.model'
 
@@ -22,10 +23,14 @@ export class UserResolver {
 
 	@Mutation(() => UserModel)
 	async create(@Args('input') input: CreateUserInput) {
-		console.log(input)
-
 		const created = this.userService.createQL(input)
-
 		return created
+	}
+
+	@Mutation(() => UserModel)
+	async updateAddress(@Args('id', { type: () => String }) id: string, @Args('input') input: CreateUserAddressInput) {
+		const updated = this.userService.updateAdressInformation({ id, ...input })
+
+		return updated
 	}
 }

@@ -24,11 +24,7 @@ export class UserService {
 	}
 
 	async createQL(values: { name: string; age: string; address: { street: string; number: string; floor: string } }) {
-		let userToCreate = new User()
-
-		userToCreate.name = values.name
-		userToCreate.age = values.age
-		userToCreate.address = values.address
+		const userToCreate = new User().create(values.name, values.age, values.address)
 
 		try {
 			const created = await this.userModel.create(userToCreate)
