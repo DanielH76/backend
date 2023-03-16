@@ -24,7 +24,7 @@ export class UserService {
         if(!id) return null
 
         try{
-            const userToFind = await this.userModel.findOne({"_id": id})
+            const userToFind = await this.userModel.findOne({_id: id})
 
             if(!userToFind) return NotFoundException
             return userToFind
@@ -50,7 +50,7 @@ export class UserService {
             console.log(id)
             if(Types.ObjectId.isValid(id)) console.log('valid')
 
-            const deleted = await this.userModel.deleteOne({"_id": id})
+            const deleted = await this.userModel.deleteOne({_id: id})
             console.log(deleted.deletedCount)
 
             if(!deleted.acknowledged) return InternalServerErrorException
@@ -59,5 +59,34 @@ export class UserService {
         }catch(error){
             return error.message
         }
+    }
+
+    async update(id: string, newValues: User){
+        const filter = {_id: id}
+        const update = {name: newValues.name, age: newValues.age, address: newValues.address, onSite: newValues.onSite}
+
+        try{
+            let updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
+            return updated
+
+        } catch(error){
+            return error.message
+        }
+    }
+
+    async updateAdressInformation(values: {id: string, street: string, number: string, floor: string}){
+        const filter = {_id: values.id}
+        const update = {address: {street: values.street, number: values.number, floor: values.floor}}
+
+        try{
+            let updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
+            console.log(updated)
+            return update
+        }catch(error){
+            return error.message
+        }
+
+
+
     }
 }

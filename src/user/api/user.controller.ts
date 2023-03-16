@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from "@nestjs/common";
 import mongoose from "mongoose";
 import { User } from "../service/schemas/user.schema";
 import { UserService } from "../service/user.service";
@@ -46,6 +46,26 @@ export class UserController {
 
         return deleted
 
+    }
+
+    @Put()
+    async update(@Body() user: User){
+        if(!user) return 'user missing'
+        
+
+        const updated = await this.userService.update(user.id, user)
+        return updated
+    }
+
+    @Put('address')
+    async updateAddress(@Body() values: {id: string, street: string, number: string, floor: string}){
+
+        if(!values.id) return 'missing id'
+        if(!values.street && !values.number && !values.floor) return 'missing update parameters'
+        
+        const updated = await this.userService.updateAdressInformation(values)
+
+        return updated
     }
 
 }
