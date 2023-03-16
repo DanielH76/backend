@@ -1,105 +1,132 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { User, UserDocument } from "./schemas/user.schema";
-
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Types } from 'mongoose'
+import { AbsenceStatus } from './schemas/user.enums'
+import { User, UserDocument } from './schemas/user.schema'
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name)private readonly userModel: Model<UserDocument>){}
+	constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
 
-    async create(userToCreate: User): Promise<User> {
-        if(!userToCreate) return null
+	async create(userToCreate: User): Promise<User> {
+		if (!userToCreate) return null
 
-        try{
-            const user = await this.userModel.create(userToCreate);
-            user.save()
+		userToCreate.onSite = false
 
-        }catch(error) {
-            return error.message 
-        }
-    }
+		try {
+			const user = await this.userModel.create(userToCreate)
+			user.save()
 
-    async get(id: string) {
-        if(!id) return null
+			return user
+		} catch (error) {
+			return error.message
+		}
+	}
 
-        try{
-            const userToFind = await this.userModel.findOne({_id: id})
+	async get(id: string) {
+		if (!id) return null
 
-            if(!userToFind) return NotFoundException
-            return userToFind
-        }catch(error) {
-            return error.message
-        }
-    }
+		try {
+			const userToFind = await this.userModel.findOne({ _id: id })
 
-    async getAll() {
-        try{
-            const usersToFind = await this.userModel.find().exec()
+			if (!userToFind) return NotFoundException
 
-            if(!usersToFind) return NotFoundException
-            return usersToFind
+			return userToFind
+		} catch (error) {
+			return error.message
+		}
+	}
 
-        }catch(error){  
-            return error.message
-        }
-    }
+	async getAll() {
+		try {
+			const usersToFind = await this.userModel.find().exec()
 
-    async delete(id: string) {
-        try{
-            console.log(id)
-            if(Types.ObjectId.isValid(id)) console.log('valid')
+			if (!usersToFind) return NotFoundException
 
-            const deleted = await this.userModel.deleteOne({_id: id})
-            console.log(deleted.deletedCount)
+			return usersToFind
+		} catch (error) {
+			return error.message
+		}
+	}
 
-            if(!deleted.acknowledged) return InternalServerErrorException
-            return deleted.deletedCount
+	async delete(id: string) {
+		try {
+			const deleted = await this.userModel.deleteOne({ _id: id })
 
-        }catch(error){
-            return error.message
-        }
-    }
+			if (!deleted.acknowledged) return InternalServerErrorException
 
-    async update(id: string, newValues: User){
-        const filter = {_id: id}
-        const update = {name: newValues.name, age: newValues.age, address: newValues.address, onSite: newValues.onSite}
+			return deleted.deletedCount
+		} catch (error) {
+			return error.message
+		}
+	}
 
-        try{
-            let updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
-            return updated
+	async update(id: string, newValues: User) {
+		const filter = { _id: id }
+		const update = {
+			name: newValues.name,
+			age: newValues.age,
+			address: newValues.address,
+			onSite: newValues.onSite,
+		}
 
-        } catch(error){
-            return error.message
-        }
-    }
+		try {
+			let updated = await this.userModel.findOneAndUpdate(filter, update, {
+				new: true,
+			})
+			return updated
+		} catch (error) {
+			return error.message
+		}
+	}
 
-    async updateAdressInformation(values: {id: string, street: string, number: string, floor: string}){
-        const filter = {_id: values.id}
-        const update = {address: {street: values.street, number: values.number, floor: values.floor}}
+	async updateAdressInformation(values: { id: string; street: string; number: string; floor: string }) {
+		const filter = { _id: values.id }
+		const update = {
+			address: {
+				street: values.street,
+				number: values.number,
+				floor: values.floor,
+			},
+		}
 
-        try{
-            const updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
-            console.log(updated)
-            return update
-        }catch(error){
-            return error.message
-        }
-    }
+		try {
+			const updated = await this.userModel.findOneAndUpdate(filter, update, {
+				new: true,
+			})
+			console.log(updated)
+			return update
+		} catch (error) {
+			return error.message
+		}
+	}
 
-    async updatePersonalInformation(values: {id: string, name: string, age: string}){
-        const filter = {_id: values.id}
-        const update = {name: values.name, age: values.age}
+	async updatePersonalInformation(values: { id: string; name: string; age: string }) {
+		const filter = { _id: values.id }
+		const update = { name: values.name, age: values.age }
 
-        try{
-            const updated = await this.userModel.findOneAndUpdate(filter, update, {new: true})
-            console.log(updated)
-            return updated
+		try {
+			const updated = await this.userModel.findOneAndUpdate(filter, update, {
+				new: true,
+			})
+			console.log(updated)
+			return updated
+		} catch (error) {
+			return error.message
+		}
+	}
 
-        }catch(error){
-            return error.message
-        }
+	async updateAbsenceStatus(values: { id: string; status: AbsenceStatus }) {
+		const filter = { _id: values.id }
+		const update = values.status == AbsenceStatus.onSite ? { onSite: true, absenceStatus: values.status } : { onSite: false, absenceStatus: values.status }
 
-    }
-
+		try {
+			const updated = await this.userModel.findOneAndUpdate(filter, update, {
+				new: true,
+			})
+			return updated
+		} catch (error) {
+			return error.message
+		}
+	}
 }
