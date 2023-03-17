@@ -1,8 +1,10 @@
 import { Mutation, Query } from '@nestjs/graphql'
 import { Args, Resolver } from '@nestjs/graphql'
+import { AbsenceStatus } from '../service/schemas/user.enums'
 import { UserService } from '../service/user.service'
 import { CreateUserAddressInput } from './inputs/create-user-address.input'
 import { CreateUserInput } from './inputs/create-user.input'
+import { UpdateUserPersonalInput } from './inputs/update-user-personal.input'
 import { UserModel } from './models/user.model'
 
 @Resolver()
@@ -37,5 +39,22 @@ export class UserResolver {
 	async updateAddress(@Args('id', { type: () => String }) id: string, @Args('input') input: CreateUserAddressInput) {
 		const updated = this.userService.updateAdressInformation({ id, ...input })
 		return updated
+	}
+
+	@Mutation(() => UserModel)
+	async updatePersonal(@Args('id', { type: () => String }) id: string, @Args('input') input: UpdateUserPersonalInput) {
+		const updated = this.userService.updatePersonalInformation({ id, ...input })
+		return updated
+	}
+
+	@Mutation(() => UserModel)
+	async updateAbsence(@Args('id', { type: () => String }) id: string, @Args('input') input: AbsenceStatus) {
+		const updated = this.userService.updateAbsenceStatus({ id, status: input })
+	}
+
+	@Mutation()
+	async deleteUser(@Args('id', { type: () => String }) id: string) {
+		const deleted = this.userService.delete(id)
+		return deleted
 	}
 }

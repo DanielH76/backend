@@ -38,6 +38,9 @@ export class UserController {
 	async getAllByStatus(@Body() params) {
 		const status = params.status
 
+		if (status === null || status === undefined) return 'missing parameter'
+		if (typeof status != 'boolean') return 'incorrect parameter type'
+
 		const usersToFind = this.userService.getAllByStatus(status)
 
 		if (!usersToFind) return NotFoundException
