@@ -2,6 +2,9 @@ import { Mutation, Query } from '@nestjs/graphql'
 import { Args, Resolver } from '@nestjs/graphql'
 import { AbsenceStatus } from '../service/schemas/user.enums'
 import { UserService } from '../service/user.service'
+import { MissingIdError } from './exceptions/missing-id.error'
+import { MissingAddressError, MissingAddressFloorError, MissingAddressNumberError } from './exceptions/missing-parameters.error'
+import { UserNotFoundError } from './exceptions/user-not-found.error'
 import { CreateUserAddressInput } from './inputs/create-user-address.input'
 import { CreateUserInput } from './inputs/create-user.input'
 import { UpdateUserPersonalInput } from './inputs/update-user-personal.input'
@@ -25,8 +28,13 @@ export class UserResolver {
 
 	@Query(() => UserModel)
 	async getById(@Args('id', { type: () => String }) id: string) {
-		const user: UserModel = await this.userService.get(id)
-		return user
+		try {
+			const user: UserModel = await this.userService.get(id)
+			return user
+		} catch (error) {
+			if (error.message == 'missing id') throw new MissingIdError()
+			if (error.message == 'user not found') throw new UserNotFoundError()
+		}
 	}
 
 	@Mutation(() => UserModel)
@@ -37,8 +45,15 @@ export class UserResolver {
 
 	@Mutation(() => UserModel)
 	async updateAddress(@Args('id', { type: () => String }) id: string, @Args('input') input: CreateUserAddressInput) {
-		const updated = this.userService.updateAdressInformation({ id, ...input })
-		return updated
+		try {
+			const updated = this.userService.updateAdressInformation({ id, ...input })
+			return updated
+		} catch (error) {
+			if (error.message == 'missing id') throw new MissingIdError()
+			if (error.message == 'missing street') throw new MissingAddressError()
+			if (error.message == 'missing streetnumber') throw new MissingAddressNumberError()
+			if (error.message == 'missing floor') throw new MissingAddressFloorError()
+		}
 	}
 
 	@Mutation(() => UserModel)

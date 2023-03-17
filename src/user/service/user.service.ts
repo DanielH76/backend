@@ -37,12 +37,12 @@ export class UserService {
 	}
 
 	async get(id: string) {
-		if (!id) return null
+		if (!id) throw new Error('missing id')
 
 		try {
 			const userToFind = await this.userModel.findOne({ _id: id })
 
-			if (!userToFind) return NotFoundException
+			if (!userToFind) return new Error('user not found')
 
 			return userToFind
 		} catch (error) {
@@ -87,7 +87,7 @@ export class UserService {
 			// })
 
 			const usersToFind = await this.userModel.find({ onSite: onSite }).exec()
-			if (!usersToFind) return NotFoundException
+			if (!usersToFind) return []
 
 			return usersToFind
 		} catch (error) {
@@ -127,6 +127,10 @@ export class UserService {
 	}
 
 	async updateAdressInformation(values: { id: string; street: string; number: string; floor: string }) {
+		if (values.id == null || undefined) throw new Error('missing id')
+		if (values.street === null || undefined) throw new Error('missing street')
+		if (values.number === null || undefined) throw new Error('missing streetnumber')
+		if (values.floor === null || undefined) throw new Error('missing floor')
 		const filter = { _id: values.id }
 		const update = {
 			address: {
@@ -143,7 +147,7 @@ export class UserService {
 			console.log(updated)
 			return update
 		} catch (error) {
-			return error.message
+			throw new Error(error.message)
 		}
 	}
 
