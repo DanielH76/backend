@@ -52,7 +52,7 @@ export class UserResolver {
 		const updated = this.userService.updateAbsenceStatus({ id, status: input })
 	}
 
-	@Mutation()
+	@Mutation(() => Number)
 	async deleteUser(@Args('id', { type: () => String }) id: string) {
 		const deleted = this.userService.delete(id)
 		return deleted
